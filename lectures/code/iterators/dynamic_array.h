@@ -121,112 +121,39 @@ public:
         return *this;
     }
 
-
-    // iterator related code
     class Iterator {
-    private:
-        T* ptr;
-    public:
-        using iterator_category = std::random_access_iterator_tag;
-        using difference_type = std::ptrdiff_t;
-        using value_type = T;
-        using pointer = T*;
-        using reference = T&;
 
-        Iterator(T* ptr){
+        public:
+        using value_type = T;
+        using difference_type = std::ptrdiff_t;
+
+        T *ptr;
+
+        Iterator(T *ptr){
             this->ptr = ptr;
         }
 
-        reference operator*() const { 
-            return *ptr;
-        }
-
-        pointer operator->() { 
-            return ptr; 
-        }
-
-        // Pre-increment
-        Iterator& operator++() {
-            ++ptr;
-            return *this;
-        }
-
-        // Post-increment
-        Iterator operator++(int) {
-            Iterator tmp = *this;
-            ++(*this);
-            return tmp;
-        }
-
-        // Pre-decrement
-        Iterator& operator--() {
-            --ptr;
-            return *this;
-        }
-
-        // Post-decrement
-        Iterator operator--(int) {
-            Iterator tmp = *this;
-            --(*this);
-            return tmp;
-        }
-
-        Iterator operator+(difference_type offset) const {
-            return Iterator(ptr + offset);
-        }
-
-        Iterator operator-(difference_type offset) const {
-            return Iterator(ptr - offset);
-        }
-
-        difference_type operator-(const Iterator& other) const {
-            return ptr - other.ptr;
-        }
-
-        Iterator& operator+=(difference_type offset) {
-            ptr += offset;
-            return *this;
-        }
-
-        Iterator& operator-=(difference_type offset) {
-            ptr -= offset;
-            return *this;
-        }
-
-        reference operator[](difference_type offset) {
-            return *(ptr + offset);
-        }
-
-        bool operator==(const Iterator& other) const {
-            return ptr == other.ptr;
-        }
-
-        bool operator!=(const Iterator& other) const {
+        bool operator!=(Iterator other){
             return ptr != other.ptr;
         }
 
-        bool operator<(const Iterator& other) const {
-            return ptr < other.ptr;
+        T operator*(){
+            return *ptr;
         }
 
-        bool operator>(const Iterator& other) const {
-            return ptr > other.ptr;
-        }
-
-        bool operator<=(const Iterator& other) const {
-            return ptr <= other.ptr;
-        }
-
-        bool operator>=(const Iterator& other) const {
-            return ptr >= other.ptr;
+        void operator++(){
+            ++ptr;
         }
     };
 
-    Iterator begin() {
-        return Iterator(sharedData->data.get());
+
+    Iterator begin(){
+        // Method that extracts the raw pointer from the smart pointer without transferring ownership
+        return Iterator(this->sharedData->data.get());
     }
 
-    Iterator end() {
+    Iterator end(){
         return Iterator(sharedData->data.get() + sharedData->size);
     }
+
 };
