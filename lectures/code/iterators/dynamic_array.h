@@ -124,12 +124,17 @@ public:
     class Iterator {
 
         public:
-        using value_type = T;
+        //using value_type = T;
+        //using difference_type = std::ptrdiff_t;
+		using iterator_category = std::random_access_iterator_tag;
         using difference_type = std::ptrdiff_t;
+        using value_type = T;
+        using pointer = T*;
+        using reference = T&;
 
-        T *ptr;
+        pointer ptr;
 
-        Iterator(T *ptr){
+        Iterator(pointer ptr){
             this->ptr = ptr;
         }
 
@@ -137,13 +142,37 @@ public:
             return ptr != other.ptr;
         }
 
-        T operator*(){
+		bool operator==(Iterator other){
+			return ptr == other.ptr;
+		}
+
+        reference operator*(){
             return *ptr;
         }
 
         void operator++(){
             ++ptr;
         }
+
+		Iterator operator--(){
+			ptr--;
+			return *this;
+		}
+
+		difference_type operator-(Iterator other) const {
+			return ptr - other.ptr;
+		}
+
+		Iterator operator-(difference_type n){
+			return Iterator(ptr - n);
+		}
+
+		Iterator operator+(difference_type n){
+			return Iterator(ptr + n);
+		}
+		bool operator<(Iterator other){
+			return ptr < other.ptr;
+		}
     };
 
 

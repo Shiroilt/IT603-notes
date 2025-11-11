@@ -2,6 +2,7 @@
 #include "linked_list.h"
 #include "dynamic_array.h"
 #include "algorithm"
+#include <numeric>
 using namespace std;
 
 void print_array(Vector<int> v){
@@ -53,13 +54,23 @@ typename Iterator::value_type max_common(Iterator begin, Iterator end){
 
 int main(int argc, char const *argv[])
 {
-    Vector<int> v = {10, 25,  20, 35, 30, 40, 50};
+    Vector<int> v = {1, 2,  3, 4, 6, 5, 10};
     // print_array(v);
     print_common(v.begin(), v.end());
     sum_common(v.begin(), v.end());
     max_common(v.begin(), v.end());
     sort(v.begin(), v.end());
+    print_common(v.begin(), v.end());
 
+    auto it = find(v.begin(), v.end(), 3000);
+    if (it != v.end()) {
+        std::cout << "Found: " << *it << std::endl;
+    } else {
+        std::cout << "Not Found" << std::endl;
+    }
+
+    int product = accumulate(v.begin(), v.end(), 0);//, multiplies<int>());
+    cout << "Product: " << product << endl;
     // ForwardList<int> fl = {100, 200, 300, 400, 500};
     // sum_common(fl.begin(), fl.end());
     // max_common(fl.begin(), fl.end());
