@@ -5,7 +5,7 @@ private:
     struct Node {
         T data;
         Node* next;
-        
+
         Node(const T& val){
             /*            
             In C++ the only difference between a class and a struct is that members and base classes 
@@ -61,7 +61,7 @@ public:
         head = nullptr;
         list_size = 0;
         for (const T& value : init) {
-            push_front(value);
+            push_back(value);
         }
     }
 
@@ -198,49 +198,35 @@ public:
         std::cout << "nullptr\n";
     }
 
-
-
-    // iterator related code //
     class Iterator {
-        // forward iterator implementation
-        // supports ++, !=, *,
-    private:
-        Node* node;
-    public:
-        using iterator_category = std::forward_iterator_tag;
+        public:
         using value_type = T;
-        using pointer = T*;
-        using reference = T&;
+        Node *node;
 
-        Iterator(Node* ptr){
-            node = ptr;
+        Iterator(Node *node){
+            this->node = node;
         }
 
-        reference operator*(){ 
+        bool operator!=(Iterator other){
+            return node != other.node;
+        }
+
+        T operator*(){
             return node->data;
         }
-        
-        Iterator& operator++() {
-            node = node->next;
-             return *this;
-        }
-        
-        bool operator==(const Iterator& other) const {
-             return node == other.node;
-        }
 
-        bool operator!=(const Iterator& other) const {
-             return node != other.node;
-        }
-
-
+    void operator++(){
+        node = node->next;
+        //return *this;
+    }
     };
 
-    Iterator begin() {
+    Iterator begin(){
+        // Method that extracts the raw pointer from the smart pointer without transferring ownership
         return Iterator(head);
-    }
+    };
+
     Iterator end(){
-         return Iterator(nullptr);
-    }
-    // iterator related code ends//
+        return Iterator(nullptr);
+    };
 };
