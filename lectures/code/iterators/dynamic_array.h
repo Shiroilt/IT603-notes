@@ -124,9 +124,7 @@ public:
     class Iterator {
 
         public:
-        //using value_type = T;
-        //using difference_type = std::ptrdiff_t;
-		using iterator_category = std::random_access_iterator_tag;
+        using iterator_category = std::random_access_iterator_tag;
         using difference_type = std::ptrdiff_t;
         using value_type = T;
         using pointer = T*;
@@ -158,6 +156,11 @@ public:
 			ptr--;
 			return *this;
 		}
+
+        Iterator operator+=(int n){
+            ptr += n;
+            return *this;
+        }
 
 		difference_type operator-(Iterator other) const {
 			return ptr - other.ptr;

@@ -100,6 +100,94 @@ auto it2 = cv.begin();
 
 ```
 
+---
+## Input/Output iterator
+
+| **Capability**                | **Input Iterator (Read-Only)** | **Output Iterator (Write-Only)** | **Forward Iterator (Read/Write)** |
+| ----------------------------- | ------------------------------ | -------------------------------- | --------------------------------- |
+| **Read** (`*it`)              | ✅                              | ❌                                | ✅                                 |
+| **Write** (`*it = val`)       | ❌                              | ✅                                | ✅                                 |
+| **Move Forward** (`++it`)     | ✅                              | ✅                                | ✅                                 |
+| **Multi-Pass** (Save & reuse) | ❌                              | ❌                                | ✅                                 |
+
+---
+## Ownership 
+
+### Who is in charge?
+- **Direct Container Operations:** The **container itself** is in charge. When you call `myVector.push_back(5)`, you're using a function that is part of the `std::vector` class. It has full access to all of the vector's internal details: its size, its capacity, the pointer to its data, etc. It "owns" the operation and knows _exactly_ how to perform it efficiently for a vector.  
+    
+- **Iterator-Based Operations:** The **algorithm** is in charge, but it's an "outsider." The algorithm (like `std::sort`) is a standalone function. It has _no idea_ it's working on a `vector` vs. a `list`. All it has is the "begin" and "end" iterators you give it. It's like giving a blindfolded person two ends of a rope and saying, "Do something with everything between these two points." It doesn't own the rope; it just has permission to work on a segment of it.  
+    
+
+### 2. Altering the Data Structure (Adding/Removing Elements)
+This is the most critical difference.
+- **Direct Container Operations:** This is their main purpose! Functions like `push_back()`, `pop_back()`, `insert()`, `erase()`, and `clear()` are designed _specifically_ to change the size and structure of the container.  
+- **Iterator-Based Operations (Most Algorithms):** Standard algorithms like `std::find`, `std::sort`, `std::copy`, and `std::transform` **cannot and do not** change the size of the container.
+    - `std::sort(v.begin(), v.end())` rearranges the elements _within_ the existing boundaries. It doesn't add or remove anything.
+    - `std::transform(...)` writes new values _over_ existing elements.  
+    - This is a fundamental safety guarantee: **algorithms read and write, they don't allocate or deallocate.**
+
+---
+
+## Iterator tags 
+
+Problem
+```c++
+template <typename InputIt, typename T>
+InputIt my_find(InputIt first, InputIt last, const T& value) {
+    while (first != last) {
+        if (*first == value) { // <-- PROBLEM #1
+            return first;
+        }
+        ++first;
+    }
+    return last;
+}
+```
+How does algorithm knows about the underlying elements represented by iterator?
+
+**Solution:**
+`iterator_traits` is a **uniform "lookup" system**.
+
+It's a template struct that acts as an "information desk." You give it _any_ iterator type (class or raw pointer), and it guarantees to provide you with five standard pieces of information:
+
+1. `value_type`: The type of the element pointed to.
+2. `difference_type`: A type to represent the distance between iterators (usually `ptrdiff_t`).
+3. `pointer`: The type of a pointer to the element (`value_type*`).
+4. `reference`: The type of a reference to the element (`value_type&`).
+5. `iterator_category`: The "tag" (e.g., `std::input_iterator_tag`) that defines its capabilities.
+
+```c++
+template <typename InputIt>
+void some_function(InputIt it) {
+    // THE CORRECT WAY:
+    // Ask the "information desk"
+    using ValueT = typename std::iterator_traits<InputIt>::value_type;
+
+    ValueT temp; // This works!
+    
+    // If 'InputIt' is 'std::vector<int>::iterator', ValueT = int
+    // If 'InputIt' is 'int*', ValueT = int
+}
+```
+Refer `iterator_tags_example.cpp`
+
+---
+## Iterator invalidation
+```c++
+std::vector<int> myVec = {1, 2, 3};
+auto begin = myVec.begin();
+auto end = myVec.end(); 
+
+// Some algorithm is looping from begin to end
+while (it != end) {
+    if (*it == 2) {
+        // DISASTER: What if the algorithm did this?
+        myVec.push_back(4); 
+    }
+    ++it; 
+}
+```
 
 ---
 #### References
