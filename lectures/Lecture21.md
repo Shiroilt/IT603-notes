@@ -182,7 +182,7 @@ The `fill` algorithm assigns a specific value to all elements in a range.
 - **Description**: This algorithm overwrites all elements in the specified range with the given value.
 ---
 - **Example**:
-  ```cpp
+```cpp
 #include <algorithm>
 #include <vector>
 #include <iostream>
@@ -190,12 +190,12 @@ using namespace std;
 int main() {
       vector<int> vec(5);
       fill(vec.begin(), vec.end(), 10);
-      
       for (int v : vec) {
           cout << v << " ";  // Output: 10 10 10 10 10
       }
   }
-  ```
+```
+
 ---
 **`std::copy`**  
 The `copy` algorithm copies elements from one range to another.
